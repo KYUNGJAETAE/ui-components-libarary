@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UI 컴포넌트 용어사전 — bbodek 바이브코딩 가이드</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;background:#f5f5f4;color:#1a1a1a;min-height:100vh}
+.root{max-width:1100px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+h1{font-size:18px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.subtitle{font-size:12px;color:#888;margin-bottom:1.5rem}
+.top{display:flex;gap:8px;margin-bottom:12px}
+.search{flex:1;padding:8px 14px;font-size:13px;border:1px solid #d1d5db;border-radius:8px;background:#fff;color:#1a1a1a;outline:none}
+.search:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.section-row{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.section-label{font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.08em;white-space:nowrap;flex-shrink:0;text-transform:uppercase}
+.section-line{height:1px;background:#e5e7eb;flex:1}
+.cat-bar{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:12px}
+.cb{padding:4px 13px;border-radius:20px;border:1px solid #e5e7eb;font-size:12px;cursor:pointer;background:#fff;color:#6b7280;white-space:nowrap;transition:all .15s;font-family:inherit}
+.cb:hover{border-color:#6366f1;color:#6366f1}
+.cb.on{background:#ede9fe;color:#7c3aed;border-color:#7c3aed;font-weight:500}
+.cb.active-parent{background:#ede9fe;color:#7c3aed;border-color:#7c3aed;font-weight:500;box-shadow:0 0 0 2px #c4b5fd}
+.term-bar{display:flex;gap:4px;flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;margin-bottom:10px}
+.term-bar::-webkit-scrollbar{height:3px}
+.term-bar::-webkit-scrollbar-thumb{background:#d1d5db;border-radius:2px}
+.ttag{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;border:1px solid #e5e7eb;font-size:11px;cursor:pointer;background:#fff;color:#6b7280;white-space:nowrap;flex-shrink:0;transition:all .15s;font-family:inherit}
+.ttag:hover{border-color:#9ca3af;color:#374151}
+.ttag.on{border-color:#6366f1;color:#4f46e5;background:#ede9fe;font-weight:500}
+.ttag-dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.6}
+.browser-wrap{position:relative;margin-bottom:16px}
+.browser{border:1px solid #d1d5db;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,.08)}
+.bbar{background:#f9fafb;border-bottom:1px solid #e5e7eb;padding:8px 14px;display:flex;align-items:center;gap:7px}
+.dot{width:10px;height:10px;border-radius:50%}
+.url{flex:1;background:#fff;border:1px solid #e5e7eb;border-radius:6px;padding:3px 12px;font-size:11px;color:#9ca3af}
+#svg-connector{position:absolute;top:0;left:0;width:100%;height:100%;pointer-events:none;z-index:200;overflow:visible}
+.screen{display:flex;flex-direction:column;height:580px;position:relative;background:#fafafa;overflow:hidden}
+.hl{position:relative}
+.hl.lit::after{content:"";position:absolute;inset:0;background:rgba(220,38,38,.1);border:2px solid #dc2626;border-radius:2px;pointer-events:none;z-index:6}
+.ltag{display:none;position:absolute;top:4px;left:4px;z-index:10;background:#dc2626;color:#fff;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;white-space:nowrap;pointer-events:none}
+.hl.lit .ltag{display:block}
+.info-modal{position:absolute;z-index:150;width:248px;background:#fff;border:1.5px solid #dc2626;border-radius:14px;box-shadow:0 12px 40px rgba(220,38,38,.15);overflow:hidden;display:none;animation:popIn .15s ease}
+@keyframes popIn{from{opacity:0;transform:scale(.95)}to{opacity:1;transform:scale(1)}}
+.info-modal.show{display:block}
+.im-head{padding:14px 16px 10px;border-bottom:1px solid #f3f4f6;display:flex;justify-content:space-between;align-items:flex-start;background:#fff}
+.im-ko{font-size:15px;font-weight:600;color:#111}
+.im-en{font-size:10px;color:#9ca3af;font-family:ui-monospace,monospace;margin-top:2px}
+.im-badge{font-size:10px;padding:2px 8px;border-radius:20px;margin-top:6px;display:inline-block;font-weight:500}
+.im-close{width:22px;height:22px;border-radius:50%;border:1px solid #e5e7eb;background:#f9fafb;color:#9ca3af;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-left:8px;font-family:inherit}
+.im-close:hover{background:#fee2e2;color:#dc2626}
+.im-body{padding:12px 16px 14px;max-height:280px;overflow-y:auto}
+.im-body::-webkit-scrollbar{width:4px}
+.im-body::-webkit-scrollbar-thumb{background:#e5e7eb;border-radius:2px}
+.im-desc{font-size:12px;color:#4b5563;line-height:1.65;margin-bottom:10px}
+.im-nodemo{font-size:11px;color:#9ca3af;background:#f9fafb;border-radius:6px;padding:6px 10px;margin-bottom:10px;line-height:1.5}
+.im-demo-note{font-size:11px;color:#dc2626;background:#fef2f2;border-radius:6px;padding:6px 10px;margin-bottom:10px;line-height:1.5}
+.sec{font-size:10px;font-weight:700;color:#9ca3af;letter-spacing:.06em;text-transform:uppercase;margin-bottom:5px;margin-top:10px}
+.props{display:flex;flex-direction:column;gap:4px}
+.pr{display:flex;gap:8px;align-items:flex-start}
+.pk{font-size:11px;font-weight:600;color:#dc2626;min-width:50px;flex-shrink:0;margin-top:1px}
+.pv{font-size:11px;color:#6b7280;line-height:1.5}
+.prompts{display:flex;flex-direction:column;gap:5px}
+.pc{font-size:11px;background:#f9fafb;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;color:#4b5563;cursor:pointer;line-height:1.5;position:relative;font-family:inherit;text-align:left}
+.pc:hover{border-color:#dc2626;background:#fef2f2;color:#111}
+.cbadge{display:none;position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:9px;color:#dc2626;background:#fef2f2;padding:2px 6px;border-radius:4px;font-weight:600}
+.pc:hover .cbadge{display:block}
+/* 화면 요소 */
+.s-hdr{background:#fff;border-bottom:1px solid #e5e7eb;padding:0 20px;height:50px;display:flex;align-items:center;gap:14px;flex-shrink:0}
+.s-logo{font-size:14px;font-weight:700;color:#111;margin-right:8px}
+.s-nl{font-size:12px;color:#6b7280;padding:4px 8px;border-radius:5px;cursor:pointer}
+.s-nl:hover{background:#f3f4f6}
+.s-sp{flex:1}
+.s-av{width:30px;height:30px;border-radius:50%;background:#ede9fe;color:#7c3aed;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.s-notif{position:relative;cursor:pointer;font-size:16px;line-height:1}
+.s-notif-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;border-radius:50%;background:#ef4444;color:#fff;font-size:9px;display:flex;align-items:center;justify-content:center;font-weight:700}
+.tooltip-w{position:relative;display:inline-block}
+.s-tip{position:absolute;bottom:calc(100%+6px);left:50%;transform:translateX(-50%);background:#111;color:#fff;font-size:11px;padding:4px 9px;border-radius:5px;white-space:nowrap;pointer-events:none;display:none;z-index:20}
+.tooltip-w:hover .s-tip{display:block}
+.stepper-bar{padding:8px 20px;border-bottom:1px solid #e5e7eb;background:#fff;flex-shrink:0;display:flex;align-items:center}
+.s-step{display:flex;align-items:center;gap:5px}
+.s-sc{width:22px;height:22px;border-radius:50%;font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;border:2px solid #d1d5db;color:#9ca3af;background:#fff}
+.s-sc.done{background:#6366f1;color:#fff;border-color:#6366f1}
+.s-sc.cur{background:#ede9fe;color:#7c3aed;border-color:#6366f1}
+.s-slabel{font-size:11px;color:#9ca3af}
+.s-slabel.cur{color:#7c3aed;font-weight:600}
+.s-sline{width:28px;height:2px;background:#e5e7eb;margin:0 6px}
+.s-sline.done{background:#6366f1}
+.body-row{display:flex;flex:1;overflow:hidden}
+.s-sb{width:160px;flex-shrink:0;background:#f9fafb;border-right:1px solid #e5e7eb;padding:10px 6px;display:flex;flex-direction:column;gap:2px}
+.s-si{font-size:12px;color:#6b7280;padding:7px 10px;border-radius:7px;cursor:pointer;display:flex;align-items:center;gap:6px}
+.s-si:hover{background:#f3f4f6}
+.s-si.on{background:#ede9fe;color:#7c3aed;font-weight:500}
+.s-sdot{width:5px;height:5px;border-radius:50%;background:currentColor;opacity:.5}
+.s-main{flex:1;padding:16px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+.s-bc{font-size:11px;color:#9ca3af;display:flex;align-items:center;gap:3px}
+.s-bc span{color:#6b7280}
+.s-bc .cur{color:#111;font-weight:500}
+.s-tabs-wrap{display:flex;border-bottom:1px solid #e5e7eb}
+.s-tab{font-size:12px;padding:7px 14px;cursor:pointer;color:#9ca3af;border-bottom:2px solid transparent;margin-bottom:-1px}
+.s-tab.on{color:#6366f1;border-bottom-color:#6366f1;font-weight:500}
+.card-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.s-card{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:10px 12px}
+.s-ct{font-size:10px;color:#9ca3af;margin-bottom:3px;font-weight:500}
+.s-cv{font-size:18px;font-weight:700;color:#111}
+.s-prog-wrap{background:#f3f4f6;border-radius:6px;overflow:hidden;height:8px}
+.s-prog{height:100%;background:#6366f1;border-radius:6px;width:65%}
+.s-tbl{width:100%;border-collapse:collapse;font-size:12px}
+.s-tbl th{text-align:left;padding:7px 8px;color:#9ca3af;font-weight:600;border-bottom:1px solid #e5e7eb;font-size:11px}
+.s-tbl td{padding:7px 8px;border-bottom:1px solid #f3f4f6;color:#4b5563}
+.s-bdg{font-size:10px;padding:2px 8px;border-radius:20px;display:inline-block;font-weight:500}
+.chip-row{display:flex;gap:5px;flex-wrap:wrap}
+.s-chip{font-size:11px;padding:3px 10px;border-radius:20px;cursor:pointer;font-weight:500}
+.s-pg{display:flex;gap:4px;justify-content:center}
+.s-pb{width:26px;height:26px;border-radius:6px;border:1px solid #e5e7eb;font-size:11px;display:flex;align-items:center;justify-content:center;background:#fff;color:#6b7280;cursor:pointer}
+.s-pb.on{background:#6366f1;color:#fff;border-color:#6366f1}
+.s-ftr{background:#f9fafb;border-top:1px solid #e5e7eb;padding:9px 20px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.s-fl{display:flex;gap:14px}
+.s-flink{font-size:11px;color:#9ca3af;cursor:pointer}
+.s-flink:hover{color:#6b7280}
+.s-fcopy{font-size:11px;color:#9ca3af}
+.s-form{display:flex;flex-direction:column;gap:8px}
+.s-field-wrap{display:flex;flex-direction:column;gap:3px}
+.s-label{font-size:11px;color:#374151;font-weight:600}
+.req{color:#ef4444;margin-left:2px}
+.s-input{padding:7px 10px;border-radius:6px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:12px;width:100%;font-family:inherit;outline:none}
+.s-input:focus{border-color:#6366f1;box-shadow:0 0 0 3px rgba(99,102,241,.1)}
+.s-input.error{border-color:#ef4444;box-shadow:0 0 0 3px rgba(239,68,68,.1)}
+.s-err{font-size:10px;color:#ef4444;margin-top:3px;font-weight:500}
+.s-select{padding:7px 10px;border-radius:6px;border:1px solid #d1d5db;background:#fff;color:#111;font-size:12px;width:100%;font-family:inherit;outline:none}
+.s-toggle-row{display:flex;align-items:center;gap:8px}
+.s-toggle{width:36px;height:20px;border-radius:10px;background:#22c55e;position:relative;cursor:pointer;flex-shrink:0;transition:background .2s}
+.s-toggle::after{content:"";position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:2px;left:18px;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.2)}
+.s-toggle.off{background:#d1d5db}
+.s-toggle.off::after{left:2px}
+.s-toggle-label{font-size:12px;color:#4b5563}
+.s-range{width:100%;accent-color:#6366f1}
+.s-checkbox-row{display:flex;align-items:center;gap:6px;font-size:12px;color:#4b5563;cursor:pointer}
+.s-radio-row{display:flex;align-items:center;gap:6px;font-size:12px;color:#4b5563;cursor:pointer}
+.s-btn-row{display:flex;gap:6px}
+.s-cta{padding:7px 16px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;font-family:inherit;transition:all .15s}
+.s-cta.filled{background:#6366f1;color:#fff}
+.s-cta.filled:hover{background:#4f46e5}
+.s-cta.outlined{background:transparent;border:1.5px solid #6366f1;color:#6366f1}
+.s-cta.ghost{background:transparent;color:#6b7280;border:1px solid #e5e7eb}
+.s-slider-wrap{display:flex;flex-direction:column;gap:4px}
+.s-slider-val{font-size:11px;color:#6366f1;text-align:right;font-weight:600}
+.s-typo{display:flex;flex-direction:column;gap:8px}
+.s-h1{font-size:22px;font-weight:800;color:#111;line-height:1.2}
+.s-h2{font-size:17px;font-weight:700;color:#111}
+.s-h3{font-size:14px;font-weight:600;color:#111}
+.s-body-txt{font-size:13px;color:#4b5563;line-height:1.7}
+.s-spinner{width:26px;height:26px;border:3px solid #e5e7eb;border-top-color:#6366f1;border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+.s-error-box{background:#fef2f2;border:1px solid #fecaca;border-radius:9px;padding:12px 14px;display:flex;gap:10px;align-items:flex-start}
+.s-error-icon{font-size:16px;flex-shrink:0}
+.s-error-txt{font-size:12px;color:#dc2626;line-height:1.55}
+.s-retry{font-size:11px;color:#2563eb;cursor:pointer;text-decoration:underline;margin-top:3px;display:block}
+.s-hover-demo{display:flex;flex-direction:column;gap:6px}
+.s-hover-item{padding:9px 12px;border-radius:7px;font-size:12px;color:#4b5563;border:1px solid #e5e7eb;cursor:pointer;transition:all .15s;background:#fff}
+.s-hover-item:hover{background:#ede9fe;color:#7c3aed;border-color:#c4b5fd}
+.s-banner{padding:10px 14px;border-radius:8px;font-size:12px;display:flex;align-items:flex-start;gap:8px;line-height:1.5}
+.s-banner.info{background:#eff6ff;color:#1d4ed8}
+.s-banner.warning{background:#fffbeb;color:#d97706}
+.s-banner.error{background:#fef2f2;color:#dc2626}
+.s-banner.success{background:#f0fdf4;color:#16a34a}
+.s-skeleton{display:flex;flex-direction:column;gap:8px}
+.sk-line{background:#f3f4f6;border-radius:4px;animation:shimmer 1.2s infinite}
+@keyframes shimmer{0%{opacity:.5}50%{opacity:1}100%{opacity:.5}}
+.sk-card-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sk-card{background:#f3f4f6;border-radius:8px;height:58px;animation:shimmer 1.2s infinite}
+.s-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 0;gap:8px}
+.s-empty-icon{font-size:32px}
+.s-empty-title{font-size:14px;font-weight:600;color:#374151}
+.s-empty-desc{font-size:12px;color:#9ca3af;text-align:center;line-height:1.6}
+.s-empty-btn{font-size:12px;padding:6px 14px;border-radius:7px;border:1.5px solid #6366f1;color:#6366f1;background:#ede9fe;cursor:pointer;font-weight:500;font-family:inherit}
+.modal-bg{position:absolute;inset:0;z-index:40;background:rgba(0,0,0,.35);display:none;align-items:center;justify-content:center}
+.modal-bg.show{display:flex}
+.s-modal{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:22px 24px;width:260px;box-shadow:0 20px 60px rgba(0,0,0,.15)}
+.s-mt{font-size:15px;font-weight:700;color:#111;margin-bottom:6px}
+.s-md{font-size:12px;color:#4b5563;margin-bottom:18px;line-height:1.55}
+.s-mbs{display:flex;gap:8px;justify-content:flex-end}
+.s-btn{font-size:12px;padding:7px 16px;border-radius:7px;border:1px solid #e5e7eb;cursor:pointer;background:#fff;color:#374151;font-family:inherit;font-weight:500}
+.s-btn.pri{background:#6366f1;color:#fff;border-color:#6366f1}
+.s-drawer{position:absolute;top:0;right:0;bottom:0;width:200px;z-index:30;background:#fff;border-left:1px solid #e5e7eb;padding:16px 14px;transform:translateX(100%);transition:transform .25s;box-shadow:-8px 0 24px rgba(0,0,0,.08)}
+.s-drawer.open{transform:translateX(0)}
+.s-drtitle{font-size:14px;font-weight:700;color:#111;margin-bottom:12px}
+.s-popover{position:absolute;top:52px;right:14px;z-index:35;background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:14px 16px;width:175px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
+.s-popover.show{display:block}
+.s-pop-name{font-size:13px;font-weight:700;color:#111;margin-bottom:2px}
+.s-pop-email{font-size:11px;color:#9ca3af;margin-bottom:10px}
+.s-pop-btn{font-size:12px;color:#ef4444;cursor:pointer;font-weight:500}
+.ctx-menu{position:absolute;z-index:40;background:#fff;border:1px solid #e5e7eb;border-radius:9px;padding:4px 0;width:140px;box-shadow:0 8px 24px rgba(0,0,0,.12);display:none}
+.ctx-menu.show{display:block}
+.ctx-item{font-size:12px;padding:8px 14px;cursor:pointer;color:#374151;font-weight:500}
+.ctx-item:hover{background:#f9fafb}
+.ctx-item.danger{color:#ef4444}
+.ctx-div{height:1px;background:#f3f4f6;margin:3px 0}
+/* 토스트 — 상단 중앙 (정보 모달과 겹치지 않게) */
+.s-toast{position:absolute;top:60px;left:50%;transform:translateX(-50%);z-index:50;background:#111;color:#fff;font-size:12px;padding:9px 18px;border-radius:9px;white-space:nowrap;display:none;opacity:0;transition:opacity .2s;font-weight:500;box-shadow:0 4px 16px rgba(0,0,0,.2)}
+.s-toast.show{display:block;opacity:1}
+.s-fab{position:absolute;bottom:50px;left:14px;z-index:30;width:40px;height:40px;border-radius:50%;background:#6366f1;color:#fff;font-size:22px;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 4px 14px rgba(99,102,241,.4);font-family:inherit}
+.s-fab:hover{background:#4f46e5}
+.s-bs{position:absolute;bottom:0;left:0;right:0;z-index:45;background:#fff;border-top:1px solid #e5e7eb;border-radius:14px 14px 0 0;padding:16px 18px;transform:translateY(100%);transition:transform .25s;box-shadow:0 -8px 24px rgba(0,0,0,.08)}
+.s-bs.open{transform:translateY(0)}
+.s-bs-handle{width:36px;height:4px;background:#e5e7eb;border-radius:2px;margin:0 auto 12px}
+.s-bs-title{font-size:13px;font-weight:700;color:#111;margin-bottom:10px}
+</style>
+</head>
+<body>
+<div class="root">
+  <h1>UI 컴포넌트 용어사전</h1>
+  <p class="subtitle">바이브코딩에서 더 정확한 지시를 하기 위한 가이드 — 소분류 클릭 시 데모 화면에서 위치와 선이 연결됩니다</p>
+
+  <div class="top"><input class="search" id="search" placeholder="검색... (예: 모달, 사이드바, 탭)"></div>
+  <div class="section-row"><span class="section-label">대분류</span><div class="section-line"></div></div>
+  <div class="cat-bar" id="cats"></div>
+  <div class="section-row"><span class="section-label">소분류</span><div class="section-line"></div></div>
+  <div class="term-bar" id="term-bar"></div>
+
+  <div class="browser-wrap">
+    <svg id="svg-connector" xmlns="http://www.w3.org/2000/svg">
+      <defs><marker id="arrow-tip" markerWidth="7" markerHeight="7" refX="3.5" refY="3.5" orient="auto"><circle cx="3.5" cy="3.5" r="2.5" fill="#dc2626" opacity=".9"/></marker></defs>
+      <path id="connector-path" fill="none" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="5,3" opacity="0" marker-end="url(#arrow-tip)"/>
+    </svg>
+    <div class="browser">
+      <div class="bbar">
+        <div class="dot" style="background:#ff5f57"></div><div class="dot" style="background:#febc2e"></div><div class="dot" style="background:#28c840"></div>
+        <div class="url">bbodek-mes.replit.app / dashboard</div>
+      </div>
+      <div class="screen" id="screen">
+        <div class="hl" id="d-header" style="flex-shrink:0">
+          <div class="ltag">헤더</div>
+          <div class="hl" id="d-navbar" style="position:static">
+            <div class="ltag" style="left:auto;right:4px">내비게이션 바</div>
+            <div class="s-hdr">
+              <span class="s-logo">🅑 bbodek MES</span>
+              <span class="s-nl">대시보드</span><span class="s-nl">작업관리</span><span class="s-nl">설비현황</span>
+              <div class="tooltip-w hl" id="d-tooltip"><div class="ltag">툴팁</div><span class="s-nl">설정 ⓘ</span><div class="s-tip">시스템 설정 페이지로 이동</div></div>
+              <div class="s-sp"></div>
+              <div class="s-notif hl" id="d-badge" onclick="showPopover()"><div class="ltag">배지</div>🔔<div class="s-notif-dot">3</div></div>
+              <div class="s-av hl" id="d-avatar" onclick="showPopover()"><div class="ltag">아바타</div>KJ</div>
+            </div>
+          </div>
+        </div>
+        <div class="hl stepper-bar" id="d-stepper">
+          <div class="ltag">스텝퍼</div>
+          <div class="s-step"><div class="s-sc done">✓</div><span class="s-slabel">기본정보</span></div>
+          <div class="s-sline done"></div>
+          <div class="s-step"><div class="s-sc cur">2</div><span class="s-slabel cur">작업설정</span></div>
+          <div class="s-sline"></div>
+          <div class="s-step"><div class="s-sc">3</div><span class="s-slabel">확인</span></div>
+        </div>
+        <div class="body-row">
+          <div class="hl" id="d-sidebar" style="height:100%">
+            <div class="ltag">사이드바</div>
+            <div class="s-sb">
+              <div class="s-si on"><span class="s-sdot"></span>대시보드</div>
+              <div class="s-si"><span class="s-sdot"></span>작업목록</div>
+              <div class="s-si"><span class="s-sdot"></span>설비현황</div>
+              <div class="s-si"><span class="s-sdot"></span>출하관리</div>
+              <div class="s-si"><span class="s-sdot"></span>리포트</div>
+            </div>
+          </div>
+          <div class="s-main" id="s-main"></div>
+        </div>
+        <div class="hl" id="d-footer"><div class="ltag">푸터</div><div class="s-ftr"><div class="s-fl"><span class="s-flink">이용약관</span><span class="s-flink">개인정보처리방침</span><span class="s-flink">고객센터</span></div><div class="s-fcopy">© 2026 뽀득 bbodek. All rights reserved.</div></div></div>
+        <div class="modal-bg" id="d-modal-bg"><div class="hl" id="d-modal" style="position:static;width:260px"><div class="ltag">모달</div><div class="s-modal"><div class="s-mt">작업 삭제</div><div class="s-md">W-0243 작업을 삭제할까요?<br>이 작업은 되돌릴 수 없습니다.</div><div class="s-mbs"><button class="s-btn" onclick="hideDemoModal()">취소</button><button class="s-btn pri">삭제</button></div></div></div></div>
+        <div class="hl s-drawer" id="d-drawer"><div class="ltag">드로어</div><div class="s-drtitle">필터 설정</div><div style="display:flex;flex-direction:column;gap:10px"><div><div style="font-size:11px;color:#9ca3af;margin-bottom:4px;font-weight:600">상태</div><select style="width:100%;font-size:12px;padding:6px 8px;border-radius:6px;border:1px solid #d1d5db;background:#fff;color:#111;font-family:inherit"><option>전체</option><option>완료</option><option>진행중</option></select></div><button class="s-btn" onclick="closeDrawer()" style="font-family:inherit">닫기</button></div></div>
+        <div class="hl s-popover" id="d-popover"><div class="ltag">팝오버</div><div class="s-pop-name">KJ (김준)</div><div class="s-pop-email">kj@thebbodek.com</div><div class="s-pop-btn" onclick="hidePopover()">로그아웃</div></div>
+        <div class="hl ctx-menu" id="d-ctx"><div class="ltag">컨텍스트 메뉴</div><div class="ctx-item">수정</div><div class="ctx-item">복사</div><div class="ctx-div"></div><div class="ctx-item danger">삭제</div></div>
+        <div class="hl s-toast" id="d-toast"><div class="ltag" style="top:-24px;left:0">토스트</div>✓ 작업이 추가되었습니다</div>
+        <div class="hl" id="d-fab" style="position:absolute;bottom:50px;left:14px;z-index:30"><div class="ltag" style="top:-24px;left:0">플로팅 버튼</div><button class="s-fab" onclick="showToast()">+</button></div>
+        <div class="hl s-bs" id="d-bottomsheet"><div class="ltag">바텀 시트</div><div class="s-bs-handle"></div><div class="s-bs-title">정렬 방식</div><div style="display:flex;flex-direction:column;gap:8px"><div style="font-size:12px;color:#4b5563;padding:6px 0;border-bottom:1px solid #f3f4f6;cursor:pointer">최신순</div><div style="font-size:12px;color:#6366f1;padding:6px 0;border-bottom:1px solid #f3f4f6;font-weight:600;cursor:pointer">작업번호순 ✓</div><div style="font-size:12px;color:#4b5563;padding:6px 0;cursor:pointer">수량순</div></div></div>
+        <div class="info-modal" id="info-modal">
+          <div class="im-head"><div><div class="im-ko" id="im-ko"></div><div class="im-en" id="im-en"></div><span class="im-badge" id="im-badge"></span></div><button class="im-close" onclick="closeInfoModal()">✕</button></div>
+          <div class="im-body" id="im-body"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const CAT_COLOR={레이아웃:{bg:"#ede9fe",t:"#7c3aed"},내비게이션:{bg:"#dbeafe",t:"#1d4ed8"},"입력/폼":{bg:"#dcfce7",t:"#16a34a"},피드백:{bg:"#fef3c7",t:"#d97706"},콘텐츠:{bg:"#fee2e2",t:"#dc2626"},오버레이:{bg:"#d1fae5",t:"#065f46"},타이포:{bg:"#fce7f3",t:"#9d174d"},상태:{bg:"#f3f4f6",t:"#374151"}};
+
+function makeDefaultView(){return `
+  <div class="hl" id="d-breadcrumb"><div class="ltag">브레드크럼</div><div class="s-bc">홈 › <span>생산관리</span> › <span class="cur">대시보드</span></div></div>
+  <div class="hl" id="d-tabs"><div class="ltag">탭</div><div class="s-tabs-wrap"><div class="s-tab on">오늘 현황</div><div class="s-tab">주간 리포트</div><div class="s-tab">월간 리포트</div></div></div>
+  <div class="hl" id="d-progress"><div class="ltag">프로그레스 바</div><div style="font-size:11px;color:#9ca3af;margin-bottom:5px;font-weight:500">오늘 목표 달성률 65%</div><div class="s-prog-wrap"><div class="s-prog"></div></div></div>
+  <div class="hl" id="d-card"><div class="ltag">카드 / 그리드</div><div class="card-row"><div class="s-card"><div class="s-ct">오늘 생산량</div><div class="s-cv">2,340</div></div><div class="s-card"><div class="s-ct">불량률</div><div class="s-cv">0.8%</div></div><div class="s-card"><div class="s-ct">가동 설비</div><div class="s-cv">12/14</div></div><div class="s-card"><div class="s-ct">금일 출하</div><div class="s-cv">1,820</div></div></div></div>
+  <div class="hl" id="d-skeleton" style="display:none"><div class="ltag">스켈레톤</div><div class="s-skeleton"><div class="sk-card-row"><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div><div class="sk-card"></div></div><div class="sk-line" style="height:12px;width:70%;margin-top:6px"></div><div class="sk-line" style="height:12px;width:50%"></div></div></div>
+  <div class="hl" id="d-empty" style="display:none"><div class="ltag">빈 상태</div><div class="s-empty"><div class="s-empty-icon">📭</div><div class="s-empty-title">아직 작업이 없어요</div><div class="s-empty-desc">새 작업을 추가하면 여기에 표시됩니다</div><button class="s-empty-btn">+ 작업 추가</button></div></div>
+  <div class="hl" id="d-table"><div class="ltag">테이블</div><table class="s-tbl"><thead><tr><th>작업번호</th><th>품목</th><th>수량</th><th>담당자</th><th>상태</th><th></th></tr></thead><tbody><tr><td>W-0241</td><td>식기류 A</td><td>500</td><td>이민준</td><td><span class="s-bdg" style="background:#f0fdf4;color:#16a34a">완료</span></td><td><span style="cursor:pointer;color:#9ca3af" onclick="showCtx(event)">⋮</span></td></tr><tr><td>W-0242</td><td>컵 B형</td><td>320</td><td>박지수</td><td><span class="s-bdg" style="background:#fffbeb;color:#d97706">진행중</span></td><td><span style="cursor:pointer;color:#9ca3af" onclick="showCtx(event)">⋮</span></td></tr><tr><td>W-0243</td><td>식기류 C</td><td>180</td><td>김태영</td><td><span class="s-bdg" style="background:#ede9fe;color:#7c3aed">대기</span></td><td><span style="cursor:pointer;color:#9ca3af" onclick="showCtx(event)">⋮</span></td></tr></tbody></table></div>
+  <div class="hl" id="d-chip"><div class="ltag">칩/태그</div><div class="chip-row"><span class="s-chip" style="background:#ede9fe;color:#7c3aed;border:1px solid #c4b5fd">식기류 ×</span><span class="s-chip" style="background:#f0fdf4;color:#16a34a;border:1px solid #bbf7d0">완료 ×</span><span class="s-chip" style="background:#f9fafb;color:#6b7280;border:1px solid #e5e7eb">+ 필터 추가</span></div></div>
+  <div class="hl" id="d-pagination"><div class="ltag">페이지네이션</div><div class="s-pg"><div class="s-pb">‹</div><div class="s-pb on">1</div><div class="s-pb">2</div><div class="s-pb">3</div><div class="s-pb">4</div><div class="s-pb">›</div></div></div>
+`;}
+function makeFormView(){return `
+  <div class="hl" id="d-breadcrumb"><div class="ltag">브레드크럼</div><div class="s-bc">홈 › <span>작업관리</span> › <span class="cur">새 작업 등록</span></div></div>
+  <div class="s-form">
+    <div class="hl" id="d-label-field"><div class="ltag">레이블 / 입력 필드</div><div class="s-field-wrap"><div class="s-label">작업명<span class="req">*</span></div><input class="s-input" id="d-input-field" placeholder="작업명을 입력하세요"><div class="s-err" id="d-err-msg" style="display:none">⚠ 작업명을 입력해주세요</div></div></div>
+    <div class="hl" id="d-placeholder-field"><div class="ltag">플레이스홀더</div><div class="s-field-wrap"><div class="s-label">담당자 이메일</div><input class="s-input" placeholder="example@thebbodek.com" style="color:#9ca3af" readonly></div></div>
+    <div class="hl" id="d-dropdown-field"><div class="ltag">드롭다운</div><div class="s-field-wrap"><div class="s-label">카테고리</div><select class="s-select"><option value="">선택하세요</option><option>식기류</option><option>컵류</option><option>트레이</option></select></div></div>
+    <div class="hl" id="d-toggle-field"><div class="ltag">토글</div><div class="s-toggle-row"><div class="s-toggle" onclick="this.classList.toggle('off')"></div><span class="s-toggle-label">긴급 작업 여부</span></div></div>
+    <div class="hl" id="d-checkbox-field"><div class="ltag">체크박스</div><div style="display:flex;gap:12px"><label class="s-checkbox-row"><input type="checkbox" checked> 세척</label><label class="s-checkbox-row"><input type="checkbox"> 검수</label><label class="s-checkbox-row"><input type="checkbox"> 포장</label></div></div>
+    <div class="hl" id="d-radio-field"><div class="ltag">라디오 버튼</div><div style="display:flex;gap:12px"><label class="s-radio-row"><input type="radio" name="p2" checked> 일반</label><label class="s-radio-row"><input type="radio" name="p2"> 우선</label><label class="s-radio-row"><input type="radio" name="p2"> 긴급</label></div></div>
+    <div class="hl" id="d-slider-field"><div class="ltag">슬라이더</div><div class="s-slider-wrap"><div class="s-label">목표 수량</div><input type="range" class="s-range" min="0" max="1000" value="300" oninput="document.getElementById('sv2').textContent=this.value+'개'"><div class="s-slider-val" id="sv2">300개</div></div></div>
+    <div class="hl" id="d-btn-field"><div class="ltag">CTA 버튼</div><div class="s-btn-row"><button class="s-cta filled">등록하기</button><button class="s-cta outlined">임시저장</button><button class="s-cta ghost">취소</button></div></div>
+  </div>
+`;}
+function makeTypoView(){return `
+  <div class="hl" id="d-breadcrumb"><div class="ltag">브레드크럼</div><div class="s-bc">홈 › <span>문서</span> › <span class="cur">타이포그래피</span></div></div>
+  <div class="s-typo">
+    <div class="hl" id="d-h1"><div class="ltag">H1 헤딩</div><div class="s-h1">생산 현황 리포트</div></div>
+    <div class="hl" id="d-h2"><div class="ltag">H2 헤딩</div><div class="s-h2">오늘의 작업 요약</div></div>
+    <div class="hl" id="d-h3"><div class="ltag">H3 헤딩</div><div class="s-h3">세부 지표</div></div>
+    <div class="hl" id="d-body-txt"><div class="ltag">본문 텍스트</div><div class="s-body-txt">오늘 총 2,340개의 식기가 세척 완료되었습니다. 불량률은 전일 대비 0.2% 감소했습니다.</div></div>
+    <div class="hl" id="d-label-demo"><div class="ltag">레이블</div><div class="s-field-wrap"><div class="s-label">작업명<span class="req">*</span></div><input class="s-input" placeholder="레이블 아래 입력 필드" style="max-width:260px"></div></div>
+    <div class="hl" id="d-placeholder-demo"><div class="ltag">플레이스홀더</div><input class="s-input" placeholder="example@thebbodek.com" style="max-width:260px;color:#9ca3af"></div>
+  </div>
+`;}
+function makeStateView(){return `
+  <div class="hl" id="d-breadcrumb"><div class="ltag">브레드크럼</div><div class="s-bc">홈 › <span>설비현황</span> › <span class="cur">상태 예시</span></div></div>
+  <div class="hl" id="d-loading-state"><div class="ltag">로딩 상태 / 스피너</div><div style="padding:16px 0;text-align:center"><div class="s-spinner"></div><div style="font-size:12px;color:#9ca3af;margin-top:10px">데이터를 불러오는 중...</div></div></div>
+  <div class="hl" id="d-error-state"><div class="ltag">에러 상태</div><div class="s-error-box"><div class="s-error-icon">⚠️</div><div class="s-error-txt">데이터를 불러오지 못했습니다.<span class="s-retry">다시 시도하기</span></div></div></div>
+  <div class="hl" id="d-hover-state"><div class="ltag">호버/포커스 상태</div><div class="s-hover-demo"><div class="s-hover-item">항목에 마우스를 올려보세요</div><div class="s-hover-item">hover 시 배경색·테두리 변화</div></div></div>
+  <div class="hl" id="d-banner"><div class="ltag">배너/알럿</div><div style="display:flex;flex-direction:column;gap:6px">
+    <div class="s-banner info">ℹ️ 시스템 점검 예정 (6/30 02:00~04:00)</div>
+    <div class="s-banner warning">⚠️ 설비 #3 온도가 정상 범위를 초과했습니다.</div>
+    <div class="s-banner error">🚨 네트워크 연결이 끊어졌습니다.</div>
+    <div class="s-banner success">✓ 작업이 성공적으로 저장되었습니다.</div>
+  </div></div>
+`;}
+
+const TERMS=[
+  {ko:"헤더",en:"Header",cat:"레이아웃",demoId:"d-header",view:"default",desc:"페이지 최상단 영역 전체. 내비게이션 바를 포함하는 큰 개념.",props:[{k:"높이",v:"48px / 64px / 80px"},{k:"고정",v:"sticky / static"},{k:"배경",v:"흰색 / 투명 / blur"}],prompts:["헤더 높이를 64px로 하고 스크롤해도 상단에 고정해줘 (sticky)","헤더 배경을 반투명 blur 처리해줘"]},
+  {ko:"푸터",en:"Footer",cat:"레이아웃",demoId:"d-footer",view:"default",desc:"페이지 맨 아래 고정 영역. 약관·저작권·링크 등을 담음.",props:[{k:"배치",v:"sticky footer / 콘텐츠 아래"},{k:"컬럼",v:"1열 / 3열(링크 그룹)"}],prompts:["푸터를 3컬럼으로 나눠서 링크 그룹 넣어줘","콘텐츠 짧아도 푸터가 항상 맨 아래 붙게 해줘"]},
+  {ko:"히어로 섹션",en:"Hero Section",cat:"레이아웃",demoId:null,view:"default",desc:"랜딩 페이지 상단 핵심 메시지+CTA 대형 영역.",props:[{k:"높이",v:"100vh / 60vh"},{k:"배경",v:"이미지+오버레이 / 단색"}],prompts:["히어로 높이를 100vh로 하고 배경 이미지에 오버레이 깔아줘"]},
+  {ko:"그리드",en:"Grid",cat:"레이아웃",demoId:"d-card",view:"default",desc:"콘텐츠를 격자로 배치하는 레이아웃.",props:[{k:"컬럼",v:"2열 / 3열 / 4열 / auto-fill"},{k:"간격",v:"gap: 8px / 16px / 24px"}],prompts:["카드를 데스크탑 4열, 모바일 1열 반응형 그리드로 배치해줘"]},
+  {ko:"컨테이너",en:"Container",cat:"레이아웃",demoId:null,view:"default",desc:"콘텐츠 최대 너비를 제한하고 가운데 정렬하는 박스.",props:[{k:"최대 너비",v:"960px / 1200px / 1440px"}],prompts:["컨테이너 최대 너비 1280px로 제한하고 가운데 정렬해줘"]},
+  {ko:"디바이더",en:"Divider",cat:"레이아웃",demoId:null,view:"default",desc:"섹션이나 항목 사이를 구분하는 선.",props:[{k:"방향",v:"가로 / 세로"},{k:"스타일",v:"solid / dashed / dotted"}],prompts:["섹션 사이에 가로 디바이더 추가해줘"]},
+  {ko:"내비게이션 바",en:"Navbar",cat:"내비게이션",demoId:"d-navbar",view:"default",desc:"상단 가로 탐색 바.",props:[{k:"고정",v:"sticky / fixed / static"},{k:"모바일",v:"햄버거 메뉴로 전환"}],prompts:["내비게이션 바 sticky로 스크롤해도 고정해줘","모바일에서 햄버거 메뉴로 숨겨줘"]},
+  {ko:"사이드바",en:"Sidebar",cat:"내비게이션",demoId:"d-sidebar",view:"default",desc:"화면 왼쪽에 고정된 세로 메뉴 패널.",props:[{k:"너비",v:"160px / 240px / 280px"},{k:"동작",v:"항상 노출 / 토글 / hover 확장"},{k:"접기",v:"아이콘만 collapsed"}],prompts:["왼쪽 사이드바 너비 240px, 항상 고정으로 보여줘","접으면 아이콘만 보이는 collapsed로 만들어줘"]},
+  {ko:"탭",en:"Tabs",cat:"내비게이션",demoId:"d-tabs",view:"default",desc:"같은 페이지 안에서 섹션을 전환하는 버튼 모음.",props:[{k:"스타일",v:"underline / pill / boxed"},{k:"정렬",v:"left / center / stretch"}],prompts:["탭을 pill 형태로 바꿔줘","탭을 stretch로 너비 꽉 채워줘"]},
+  {ko:"브레드크럼",en:"Breadcrumb",cat:"내비게이션",demoId:"d-breadcrumb",view:"default",desc:"현재 위치 경로를 보여주는 링크 체인.",props:[{k:"구분자",v:"/ · › 화살표"}],prompts:["브레드크럼 구분자를 › 로 바꿔줘","현재 페이지 bold 처리하고 링크 없애줘"]},
+  {ko:"페이지네이션",en:"Pagination",cat:"내비게이션",demoId:"d-pagination",view:"default",desc:"긴 목록을 페이지로 나눠 이동하는 버튼 모음.",props:[{k:"스타일",v:"숫자 / 이전·다음만 / 더보기"},{k:"페이지당",v:"10개 / 20개 / 50개"}],prompts:["테이블 하단에 페이지네이션 추가해줘","페이지당 20개, 숫자 5개까지 표시해줘"]},
+  {ko:"햄버거 메뉴",en:"Hamburger Menu",cat:"내비게이션",demoId:null,view:"default",desc:"모바일에서 ≡ 아이콘으로 내비게이션을 여는 버튼.",props:[{k:"열림",v:"전체화면 / 드로어 / 드롭다운"}],prompts:["모바일 768px 이하에서 햄버거 메뉴로 전환해줘"]},
+  {ko:"스텝퍼",en:"Stepper",cat:"내비게이션",demoId:"d-stepper",view:"default",desc:"여러 단계 흐름을 보여주는 진행 표시기.",props:[{k:"방향",v:"가로 / 세로"},{k:"상태",v:"완료 / 현재 / 미완료"}],prompts:["3단계 폼에 상단 스텝 인디케이터 추가해줘","완료 단계는 체크 아이콘으로 표시해줘"]},
+  {ko:"입력 필드",en:"Input / Text Field",cat:"입력/폼",demoId:"d-label-field",view:"form",desc:"사용자가 텍스트를 입력하는 기본 폼 요소.",props:[{k:"크기",v:"sm 32px / md 40px / lg 48px"},{k:"상태",v:"default / focus / error / disabled"}],prompts:["입력 필드 왼쪽에 돋보기 아이콘 추가해줘","에러 시 테두리 빨간색, 하단에 에러 메시지 표시해줘"],showFn:()=>{const f=g("d-input-field"),e=g("d-err-msg");if(f)f.classList.add("error");if(e)e.style.display="block";},hideFn:()=>{const f=g("d-input-field"),e=g("d-err-msg");if(f)f.classList.remove("error");if(e)e.style.display="none";}},
+  {ko:"드롭다운",en:"Dropdown / Select",cat:"입력/폼",demoId:"d-dropdown-field",view:"form",desc:"클릭 시 목록이 펼쳐지고 하나를 선택하는 UI.",props:[{k:"검색",v:"searchable / 검색 불가"},{k:"다중",v:"단일 / multi-select"}],prompts:["드롭다운에 검색 기능 추가해줘 (searchable)","multi-select 드롭다운으로 만들어줘"]},
+  {ko:"체크박스",en:"Checkbox",cat:"입력/폼",demoId:"d-checkbox-field",view:"form",desc:"복수 선택이 가능한 사각형 선택 요소.",props:[{k:"상태",v:"unchecked / checked / indeterminate"}],prompts:["전체 선택 체크박스 추가하고 하위 항목 연동해줘"]},
+  {ko:"토글",en:"Toggle / Switch",cat:"입력/폼",demoId:"d-toggle-field",view:"form",desc:"켜기/끄기를 전환하는 스위치.",props:[{k:"색상",v:"on: 파랑 / 초록 / 브랜드컬러"}],prompts:["토글 켜진 상태 색상을 초록으로 바꿔줘"]},
+  {ko:"슬라이더",en:"Slider / Range",cat:"입력/폼",demoId:"d-slider-field",view:"form",desc:"드래그로 수치나 범위를 조절하는 막대형 입력.",props:[{k:"핸들",v:"단일 값 / 양쪽 범위(range)"}],prompts:["가격 필터를 양쪽 핸들 범위 슬라이더로 만들어줘"]},
+  {ko:"CTA 버튼",en:"CTA Button",cat:"입력/폼",demoId:"d-btn-field",view:"form",desc:"핵심 행동을 유도하는 강조 버튼.",props:[{k:"변형",v:"filled / outlined / ghost"},{k:"크기",v:"sm / md / lg / full-width"},{k:"상태",v:"default / loading / disabled"}],prompts:["버튼 클릭 시 로딩 스피너 보여주고 disabled 처리해줘","버튼 full-width로 컨테이너 꽉 채워줘"]},
+  {ko:"플로팅 버튼",en:"FAB",cat:"입력/폼",demoId:"d-fab",view:"default",desc:"화면 구석에 고정으로 떠있는 원형 버튼.",props:[{k:"위치",v:"우하단(기본) / 좌하단"}],prompts:["오른쪽 하단 + 플로팅 버튼 추가해줘 (fixed, bottom:24px, right:24px)"],showFn:()=>showToast(),hideFn:()=>{const t=g("d-toast");if(t)t.classList.remove("show");}},
+  {ko:"폼 유효성 검사",en:"Form Validation",cat:"입력/폼",demoId:"d-label-field",view:"form",desc:"입력값 조건 체크 후 에러 메시지를 보여주는 처리.",props:[{k:"시점",v:"onChange / onBlur / 제출 시"}],prompts:["이메일 형식 아닌 경우 에러 메시지 보여줘"],showFn:()=>{const f=g("d-input-field"),e=g("d-err-msg");if(f)f.classList.add("error");if(e)e.style.display="block";},hideFn:()=>{const f=g("d-input-field"),e=g("d-err-msg");if(f)f.classList.remove("error");if(e)e.style.display="none";}},
+  {ko:"토스트",en:"Toast / Snackbar",cat:"피드백",demoId:"d-toast",view:"default",desc:"잠깐 나타났다 사라지는 알림 메시지. 상단 중앙에 표시.",props:[{k:"위치",v:"상단 중앙 / 우하단"},{k:"타입",v:"success / error / warning / info"},{k:"시간",v:"2초 / 3초 / 수동 닫기"}],prompts:["저장 성공 시 상단 중앙에 초록 토스트 2초 보여줘","에러 빨간 토스트, 성공 초록 토스트로 구분해줘"],forceModalPos:{left:12,top:12},showFn:()=>{const t=g("d-toast");if(t)t.classList.add("show");},hideFn:()=>{const t=g("d-toast");if(t)t.classList.remove("show");}},
+  {ko:"배너/알럿",en:"Banner / Alert",cat:"피드백",demoId:"d-banner",view:"state",desc:"페이지 상단이나 섹션에 고정 노출되는 공지·경고 박스.",props:[{k:"타입",v:"info / success / warning / error"}],prompts:["페이지 상단에 공지 배너 추가하고 X 버튼으로 닫을 수 있게 해줘"]},
+  {ko:"스피너",en:"Spinner / Loader",cat:"피드백",demoId:"d-loading-state",view:"state",desc:"로딩 중을 나타내는 회전 아이콘.",props:[{k:"크기",v:"sm 16px / md 24px / lg 40px"}],prompts:["버튼 클릭 시 스피너 보여주고 비활성화해줘"]},
+  {ko:"스켈레톤",en:"Skeleton Screen",cat:"피드백",demoId:"d-skeleton",view:"default",desc:"로딩 전 회색 블록으로 자리 잡아주는 플레이스홀더.",props:[{k:"애니메이션",v:"shimmer / pulse"}],prompts:["카드 로딩 전에 shimmer 스켈레톤 보여줘"],showFn:()=>{const s=g("d-skeleton"),c=g("d-card");if(s)s.style.display="block";if(c)c.style.display="none";},hideFn:()=>{const s=g("d-skeleton"),c=g("d-card");if(s)s.style.display="none";if(c)c.style.display="block";}},
+  {ko:"프로그레스 바",en:"Progress Bar",cat:"피드백",demoId:"d-progress",view:"default",desc:"작업 진행률을 가로 막대로 표시.",props:[{k:"높이",v:"4px / 8px / 12px"}],prompts:["파일 업로드 진행률 프로그레스 바로 표시해줘","프로그레스 바 오른쪽에 퍼센트 숫자 보여줘"]},
+  {ko:"빈 상태",en:"Empty State",cat:"피드백",demoId:"d-empty",view:"default",desc:"데이터가 없을 때 보여주는 안내 UI.",props:[{k:"구성",v:"아이콘 + 제목 + 설명 + CTA버튼"}],prompts:["데이터 없을 때 빈 상태 UI 추가해줘"],showFn:()=>{const e=g("d-empty"),t=g("d-table"),c=g("d-chip");if(e)e.style.display="block";if(t)t.style.display="none";if(c)c.style.display="none";},hideFn:()=>{const e=g("d-empty"),t=g("d-table"),c=g("d-chip");if(e)e.style.display="none";if(t)t.style.display="block";if(c)c.style.display="block";}},
+  {ko:"배지",en:"Badge",cat:"콘텐츠",demoId:"d-badge",view:"default",desc:"숫자나 상태를 나타내는 작은 라벨.",props:[{k:"위치",v:"아이콘 우상단 / 텍스트 옆"},{k:"타입",v:"숫자 / 상태 / 점(dot)"}],prompts:["알림 아이콘 우상단에 빨간 숫자 배지 추가해줘","99개 초과 시 '99+'로 표시해줘"]},
+  {ko:"칩/태그",en:"Chip / Tag",cat:"콘텐츠",demoId:"d-chip",view:"default",desc:"카테고리나 필터를 나타내는 작은 라벨.",props:[{k:"삭제",v:"X 버튼 있음 / 없음"},{k:"클릭",v:"선택/해제 토글"}],prompts:["선택한 필터를 X 버튼 달린 칩으로 보여줘"]},
+  {ko:"아바타",en:"Avatar",cat:"콘텐츠",demoId:"d-avatar",view:"default",desc:"사용자 프로필 사진 또는 이니셜 원형 표시.",props:[{k:"크기",v:"sm 24px / md 36px / lg 48px"},{k:"폴백",v:"이니셜 / 기본 아이콘"}],prompts:["이미지 없으면 이름 이니셜 아바타로 보여줘"]},
+  {ko:"카드",en:"Card",cat:"콘텐츠",demoId:"d-card",view:"default",desc:"정보를 박스 형태로 묶어 보여주는 컨테이너.",props:[{k:"그림자",v:"shadow-sm / shadow-md / 테두리만"},{k:"호버",v:"translateY 올라오는 효과"}],prompts:["카드 hover 시 위로 살짝 올라오는 효과 추가해줘"]},
+  {ko:"아코디언",en:"Accordion",cat:"콘텐츠",demoId:null,view:"default",desc:"클릭 시 접히고 펴지는 섹션.",props:[{k:"동작",v:"하나만 열림 / 여러 개 동시"}],prompts:["FAQ 섹션을 아코디언으로 만들어줘"]},
+  {ko:"캐러셀",en:"Carousel",cat:"콘텐츠",demoId:null,view:"default",desc:"이미지나 카드를 좌우로 넘기는 UI.",props:[{k:"자동재생",v:"autoplay 3초 / 수동"}],prompts:["배너 캐러셀 자동재생 5초 간격으로 만들어줘"]},
+  {ko:"테이블",en:"Table / Data Grid",cat:"콘텐츠",demoId:"d-table",view:"default",desc:"행·열로 데이터를 정리해 보여주는 표.",props:[{k:"정렬",v:"컬럼 클릭 시 오름/내림"},{k:"선택",v:"행 체크박스 / 전체 선택"},{k:"고정",v:"sticky 헤더"}],prompts:["테이블 헤더 클릭 시 정렬 기능 추가해줘","테이블 헤더 sticky로 고정해줘"]},
+  {ko:"리스트",en:"List",cat:"콘텐츠",demoId:null,view:"default",desc:"항목을 세로로 나열하는 기본 UI 패턴.",props:[{k:"구분선",v:"항목 사이 border / 없음"}],prompts:["리스트 항목 사이에 구분선 추가해줘"]},
+  {ko:"모달",en:"Modal / Dialog",cat:"오버레이",demoId:"d-modal",view:"default",desc:"현재 화면 위에 뜨는 팝업 창.",props:[{k:"크기",v:"sm 400px / md 560px / lg 720px"},{k:"닫기",v:"X 버튼 / 바깥 클릭 / ESC"}],prompts:["모달 560px 너비로 화면 중앙에 띄워줘","모달 바깥 클릭하면 닫히게 해줘"],showFn:()=>{const m=g("d-modal-bg");if(m)m.classList.add("show");},hideFn:()=>{const m=g("d-modal-bg");if(m)m.classList.remove("show");}},
+  {ko:"드로어",en:"Drawer / Slide-over",cat:"오버레이",demoId:"d-drawer",view:"default",desc:"화면 옆에서 슬라이드로 나오는 패널.",props:[{k:"방향",v:"오른쪽 / 왼쪽 / 하단"},{k:"너비",v:"320px / 400px / 50vw"}],prompts:["오른쪽 슬라이드 드로어 너비 400px로 만들어줘"],showFn:()=>{const d=g("d-drawer");if(d)d.classList.add("open");},hideFn:()=>{const d=g("d-drawer");if(d)d.classList.remove("open");}},
+  {ko:"툴팁",en:"Tooltip",cat:"오버레이",demoId:"d-tooltip",view:"default",desc:"마우스 올리면 나오는 작은 설명 말풍선.",props:[{k:"방향",v:"top / bottom / left / right"},{k:"트리거",v:"hover / click / focus"}],prompts:["버튼 위에 hover 시 툴팁 추가해줘","아이콘 버튼에 기능 설명 툴팁 달아줘"]},
+  {ko:"팝오버",en:"Popover",cat:"오버레이",demoId:"d-popover",view:"default",desc:"클릭 시 요소 근처에 뜨는 작은 패널.",props:[{k:"트리거",v:"click / hover"}],prompts:["사용자 아이콘 클릭 시 프로필 팝오버 띄워줘"],showFn:()=>showPopover(),hideFn:()=>hidePopover()},
+  {ko:"컨텍스트 메뉴",en:"Context Menu",cat:"오버레이",demoId:"d-ctx",view:"default",desc:"⋮ 버튼 클릭 시 나오는 메뉴 목록.",props:[{k:"위험 항목",v:"삭제 등은 빨간색"}],prompts:["테이블 행 ⋮ 버튼 클릭 시 수정·삭제 메뉴 나오게 해줘"],showFn:()=>{const m=g("d-ctx");if(m){m.classList.add("show");m.style.top="190px";m.style.right="16px";}},hideFn:()=>{const m=g("d-ctx");if(m)m.classList.remove("show");}},
+  {ko:"바텀 시트",en:"Bottom Sheet",cat:"오버레이",demoId:"d-bottomsheet",view:"default",desc:"모바일에서 하단에서 올라오는 패널.",props:[{k:"핸들",v:"상단 드래그 핸들 바"}],prompts:["모바일에서 하단 바텀 시트로 필터 보여줘"],showFn:()=>{const b=g("d-bottomsheet");if(b)b.classList.add("open");},hideFn:()=>{const b=g("d-bottomsheet");if(b)b.classList.remove("open");}},
+  {ko:"헤딩",en:"Heading H1~H6",cat:"타이포",demoId:"d-h1",view:"typo",desc:"제목 계층을 나타내는 텍스트.",props:[{k:"크기",v:"H1: 32px+ / H2: 24px / H3: 20px"}],prompts:["페이지 제목 H1, 섹션 제목 H2로 계층 잡아줘"]},
+  {ko:"레이블",en:"Label",cat:"타이포",demoId:"d-label-demo",view:"typo",desc:"폼 필드나 데이터 앞에 붙는 설명 텍스트.",props:[{k:"필수 표시",v:"* 빨간 별표"}],prompts:["입력 필드 위에 레이블 추가하고 필수 항목엔 * 표시해줘"]},
+  {ko:"플레이스홀더",en:"Placeholder",cat:"타이포",demoId:"d-placeholder-demo",view:"typo",desc:"입력 전 필드 안에 보이는 힌트 텍스트.",props:[{k:"색상",v:"연한 회색(#999)"}],prompts:["이메일 필드 플레이스홀더를 'example@company.com'으로 바꿔줘"]},
+  {ko:"로딩 상태",en:"Loading State",cat:"상태",demoId:"d-loading-state",view:"state",desc:"데이터를 가져오는 동안 UI가 취하는 상태.",props:[{k:"방식",v:"스피너 / 스켈레톤 / 프로그레스 바"}],prompts:["API 호출 중 버튼 비활성화하고 스피너 보여줘"]},
+  {ko:"에러 상태",en:"Error State",cat:"상태",demoId:"d-error-state",view:"state",desc:"오류 발생 시 사용자에게 보여주는 UI.",props:[{k:"범위",v:"인라인(필드) / 페이지 전체"}],prompts:["API 실패 시 에러 메시지와 '다시 시도' 버튼 보여줘"]},
+  {ko:"호버/포커스 상태",en:"Hover / Focus State",cat:"상태",demoId:"d-hover-state",view:"state",desc:"마우스 올리거나 키보드 접근 시 시각 피드백.",props:[{k:"hover",v:"배경색 / 색상 변화"},{k:"focus",v:"파란 테두리 ring"}],prompts:["버튼 hover 시 배경색 살짝 어둡게 + 0.15s transition 추가해줘"]},
+];
+
+function g(id){return document.getElementById(id);}
+const CATS=["전체",...Object.keys(CAT_COLOR)];
+let activeC="전체",activeIdx=null,prevHideFn=null,q="";
+const MODAL_W=248,MODAL_H=320,PAD=12;
+
+function filtered(){
+  const s=q.toLowerCase();
+  return TERMS.map((t,i)=>({...t,origIdx:i})).filter(t=>{
+    const mc=activeC==="전체"||t.cat===activeC;
+    const mq=!s||t.ko.includes(s)||t.en.toLowerCase().includes(s)||t.desc.includes(s)||(t.prompts&&t.prompts.some(p=>p.includes(s)));
+    return mc&&mq;
+  });
+}
+function copyText(text,el){navigator.clipboard&&navigator.clipboard.writeText(text);el.style.background="#fef2f2";el.style.color="#dc2626";setTimeout(()=>{el.style.background="";el.style.color="";},800);}
+function clearLit(){document.querySelectorAll(".hl").forEach(el=>el.classList.remove("lit"));}
+function hideConnector(){const p=g("connector-path");if(p)p.setAttribute("opacity","0");}
+
+function updateCatButtons(){
+  const activeTerm=activeIdx!=null?TERMS[activeIdx]:null;
+  const activeCat=activeTerm?activeTerm.cat:null;
+  document.querySelectorAll(".cb").forEach(btn=>{
+    const cat=btn.dataset.c;
+    btn.classList.remove("on","active-parent");
+    if(cat===activeC&&!activeCat) btn.classList.add("on");
+    else if(cat==="전체"&&activeC==="전체"&&!activeCat) btn.classList.add("on");
+    else if(cat===activeCat) btn.classList.add("active-parent");
+  });
+}
+
+function switchView(viewKey){
+  const main=g("s-main");if(!main)return;
+  if(viewKey==="default")main.innerHTML=makeDefaultView();
+  else if(viewKey==="form")main.innerHTML=makeFormView();
+  else if(viewKey==="typo")main.innerHTML=makeTypoView();
+  else if(viewKey==="state")main.innerHTML=makeStateView();
+}
+
+function positionInfoModal(t){
+  const modal=g("info-modal");
+  if(t.forceModalPos){
+    const{left,top}=t.forceModalPos;
+    modal.style.cssText=`left:${left}px;top:${top}px;right:auto;bottom:auto`;return;
+  }
+  const screen=g("screen");
+  const sW=screen.offsetWidth,sH=screen.offsetHeight;
+  if(!t.demoId){modal.style.cssText=`right:${PAD}px;bottom:${PAD}px;left:auto;top:auto`;return;}
+  const el=g(t.demoId);
+  if(!el){modal.style.cssText=`right:${PAD}px;top:${PAD}px;left:auto;bottom:auto`;return;}
+  const sR=screen.getBoundingClientRect(),eR=el.getBoundingClientRect();
+  const eT=eR.top-sR.top,eL=eR.left-sR.left,eB=eR.bottom-sR.top,eRt=eR.right-sR.left;
+  const eCX=(eL+eRt)/2,eCY=(eT+eB)/2;
+  const cands=[{left:eRt+8,top:Math.max(PAD,eCY-MODAL_H/2)},{left:eL-MODAL_W-8,top:Math.max(PAD,eCY-MODAL_H/2)},{left:Math.max(PAD,eCX-MODAL_W/2),top:eB+8},{left:Math.max(PAD,eCX-MODAL_W/2),top:eT-MODAL_H-8}];
+  function fits(c){return c.left>=PAD&&c.left+MODAL_W<=sW-PAD&&c.top>=PAD&&c.top+MODAL_H<=sH-PAD;}
+  let chosen=cands.find(c=>fits(c));
+  if(!chosen){chosen=cands.reduce((best,c)=>{const l=Math.max(c.left,eL),r=Math.min(c.left+MODAL_W,eRt),t2=Math.max(c.top,eT),b=Math.min(c.top+MODAL_H,eB);const ov=Math.max(0,r-l)*Math.max(0,b-t2);return ov<best.ov?{...c,ov}:best;},{...cands[0],ov:Infinity});chosen.left=Math.max(PAD,Math.min(chosen.left,sW-MODAL_W-PAD));chosen.top=Math.max(PAD,Math.min(chosen.top,sH-MODAL_H-PAD));}
+  modal.style.cssText=`left:${chosen.left}px;top:${chosen.top}px;right:auto;bottom:auto`;
+}
+
+function drawConnector(demoId){
+  const path=g("connector-path"),modal=g("info-modal"),wrap=document.querySelector(".browser-wrap");
+  if(!path||!modal||!wrap||!demoId){if(path)path.setAttribute("opacity","0");return;}
+  const target=g(demoId);if(!target){path.setAttribute("opacity","0");return;}
+  const wR=wrap.getBoundingClientRect(),mR=modal.getBoundingClientRect(),tR=target.getBoundingClientRect();
+  if(mR.width===0){path.setAttribute("opacity","0");return;}
+  const mL=mR.left-wR.left,mRt=mR.right-wR.left,mT=mR.top-wR.top,mB=mR.bottom-wR.top;
+  const mCX=(mL+mRt)/2,mCY=(mT+mB)/2;
+  const tL=tR.left-wR.left,tRt=tR.right-wR.left,tT=tR.top-wR.top,tB=tR.bottom-wR.top;
+  const tCX=(tL+tRt)/2,tCY=(tT+tB)/2;
+  const dx=tCX-mCX,dy=tCY-mCY;
+  let x1,y1;
+  if(Math.abs(dx)>Math.abs(dy)){x1=dx>0?mRt:mL;y1=mCY;}else{x1=mCX;y1=dy>0?mB:mT;}
+  path.setAttribute("d",`M${x1},${y1} C${x1+dx*.5},${y1+dy*.1} ${tCX-dx*.1},${tCY-dy*.3} ${tCX},${tCY}`);
+  path.setAttribute("opacity","0.7");
+}
+
+function showInfoModal(t){
+  const c=CAT_COLOR[t.cat]||{bg:"#ede9fe",t:"#7c3aed"};
+  g("im-ko").textContent=t.ko;g("im-en").textContent=t.en;
+  const badge=g("im-badge");badge.textContent=t.cat;badge.style.cssText=`background:${c.bg};color:${c.t}`;
+  const body=g("im-body");
+  body.innerHTML=`<div class="im-desc">${t.desc}</div>${t.demoId?'<div class="im-demo-note">← 선을 따라 화면에서 위치를 확인하세요</div>':'<div class="im-nodemo">데모 화면에 별도 표시 없음</div>'}${t.props&&t.props.length?`<div class="sec">속성 / 옵션</div><div class="props">${t.props.map(p=>`<div class="pr"><span class="pk">${p.k}</span><span class="pv">${p.v}</span></div>`).join("")}</div>`:""}<div class="sec" style="margin-top:12px">프롬프트 예시 <span style="font-size:9px;font-weight:400;text-transform:none">(클릭 복사)</span></div><div class="prompts">${(t.prompts||[]).map(p=>`<button class="pc" data-text="${p.replace(/"/g,"&quot;")}">"${p}"<span class="cbadge">복사됨</span></button>`).join("")}</div>`;
+  body.querySelectorAll(".pc").forEach(pc=>pc.addEventListener("click",()=>copyText(pc.dataset.text,pc)));
+  const modal=g("info-modal");modal.classList.remove("show");
+  positionInfoModal(t);modal.classList.add("show");
+  requestAnimationFrame(()=>requestAnimationFrame(()=>drawConnector(t.demoId)));
+}
+
+function closeInfoModal(){
+  const modal=g("info-modal");if(modal)modal.classList.remove("show");
+  hideConnector();clearLit();activeIdx=null;updateCatButtons();renderTermBar();
+}
+
+function activateTerm(t){
+  if(prevHideFn){try{prevHideFn();}catch(e){}prevHideFn=null;}
+  clearLit();hideConnector();activeIdx=t.origIdx;
+  switchView(t.view||"default");
+  requestAnimationFrame(()=>{
+    if(t.demoId){const el=g(t.demoId);if(el)el.classList.add("lit");}
+    if(t.showFn){try{t.showFn();}catch(e){}prevHideFn=t.hideFn||null;}
+    showInfoModal(t);updateCatButtons();renderTermBar();
+  });
+}
+
+function renderTermBar(){
+  const list=filtered();
+  const tb=g("term-bar");
+  tb.innerHTML=list.map(t=>{
+    const c=CAT_COLOR[t.cat]||{t:"#7c3aed"};
+    const isOn=activeIdx===t.origIdx;
+    return `<button class="ttag${isOn?" on":""}" data-oi="${t.origIdx}"><span class="ttag-dot" style="background:${c.t}"></span>${t.ko}</button>`;
+  }).join("");
+  tb.querySelectorAll(".ttag").forEach(el=>{
+    el.addEventListener("click",()=>activateTerm({...TERMS[parseInt(el.dataset.oi)],origIdx:parseInt(el.dataset.oi)}));
+  });
+}
+
+function renderCats(){
+  g("cats").innerHTML=CATS.map(c=>`<button class="cb" data-c="${c}">${c}</button>`).join("");
+  updateCatButtons();
+  g("cats").querySelectorAll(".cb").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      activeC=btn.dataset.c;
+      if(prevHideFn){try{prevHideFn();}catch(e){}prevHideFn=null;}
+      clearLit();hideConnector();activeIdx=null;
+      g("info-modal").classList.remove("show");
+      updateCatButtons();renderTermBar();
+    });
+  });
+}
+
+g("search").addEventListener("input",e=>{
+  q=e.target.value;
+  if(prevHideFn){try{prevHideFn();}catch(e){}prevHideFn=null;}
+  clearLit();hideConnector();activeIdx=null;g("info-modal").classList.remove("show");renderTermBar();
+});
+g("screen").addEventListener("click",e=>{
+  if(!e.target.closest("#d-popover")&&!e.target.closest(".s-av")&&!e.target.closest(".s-notif"))hidePopover();
+  if(!e.target.closest("#d-ctx"))if(g("d-ctx"))g("d-ctx").classList.remove("show");
+  if(!e.target.closest("#info-modal")&&!e.target.closest(".ttag"))closeInfoModal();
+});
+
+function hideDemoModal(){const m=g("d-modal-bg");if(m)m.classList.remove("show");closeInfoModal();}
+function closeDrawer(){const d=g("d-drawer");if(d)d.classList.remove("open");closeInfoModal();}
+function showPopover(){const p=g("d-popover");if(p)p.classList.add("show");}
+function hidePopover(){const p=g("d-popover");if(p)p.classList.remove("show");}
+function showToast(){const t=g("d-toast");if(t){t.classList.add("show");setTimeout(()=>t.classList.remove("show"),2500);}}
+function showCtx(e){e.stopPropagation();const m=g("d-ctx");if(m){m.classList.add("show");m.style.top="190px";m.style.right="16px";setTimeout(()=>m.classList.remove("show"),2000);}}
+
+renderCats();switchView("default");renderTermBar();
+</script>
+</body>
+</html>
